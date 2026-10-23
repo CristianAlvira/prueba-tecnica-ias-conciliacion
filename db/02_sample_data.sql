@@ -1,12 +1,12 @@
 -- Los cuatro casos de muestra del enunciado, con fechas relativas a SYSTIMESTAMP para que entren en la ventana de 24 horas.
--- Uso: lo carga el script de inicio; se puede volver a ejecutar para reiniciar los datos (borra los registros anteriores).
+-- Uso: lo carga el script de inicio; se puede volver a ejecutar para reiniciar los casos (solo borra los pagos 1 a 4 y lo que depende de ellos).
 WHENEVER SQLERROR EXIT SQL.SQLCODE
 
-DELETE FROM support_audit;
-DELETE FROM ledger_entry WHERE related_entry_id IS NOT NULL;
-DELETE FROM ledger_entry;
-DELETE FROM provider_event;
-DELETE FROM payment;
+DELETE FROM support_audit WHERE payment_id IN (1, 2, 3, 4);
+DELETE FROM ledger_entry WHERE payment_id IN (1, 2, 3, 4) AND related_entry_id IS NOT NULL;
+DELETE FROM ledger_entry WHERE payment_id IN (1, 2, 3, 4);
+DELETE FROM provider_event WHERE payment_id IN (1, 2, 3, 4);
+DELETE FROM payment WHERE id IN (1, 2, 3, 4);
 
 INSERT INTO payment (id, external_ref, status, amount, updated_at) VALUES (1, 'PAY-AX91', 'PENDING',   125000, SYSTIMESTAMP - INTERVAL '3' HOUR);
 INSERT INTO payment (id, external_ref, status, amount, updated_at) VALUES (2, 'PAY-BX17', 'CONFIRMED',  89000, SYSTIMESTAMP - INTERVAL '2' HOUR);

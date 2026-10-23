@@ -11,7 +11,9 @@ DECLARE
     v_outcome  VARCHAR2(20);
     v_reason   VARCHAR2(400);
 BEGIN
-    FOR payment_row IN (SELECT external_ref FROM payment ORDER BY id) LOOP
+    FOR payment_row IN (SELECT external_ref FROM payment
+                        WHERE external_ref IN ('PAY-AX91', 'PAY-BX17', 'PAY-CQ22', 'PAY-DK44')
+                        ORDER BY id) LOOP
         FOR attempt IN 1 .. c_attempts LOOP
             reconcile_payment(payment_row.external_ref, v_outcome, v_reason);
             DBMS_OUTPUT.PUT_LINE(payment_row.external_ref || ' intento ' || attempt || ': ' || v_outcome
@@ -28,6 +30,7 @@ SELECT p.external_ref,
         FROM ledger_entry l WHERE l.payment_id = p.id) AS net_debit,
        (SELECT COUNT(*) FROM support_audit a WHERE a.payment_id = p.id) AS audits
 FROM payment p
+WHERE p.external_ref IN ('PAY-AX91', 'PAY-BX17', 'PAY-CQ22', 'PAY-DK44')
 ORDER BY p.id;
 
 EXIT

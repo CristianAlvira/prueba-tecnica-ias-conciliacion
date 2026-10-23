@@ -1,5 +1,5 @@
 -- Procedimiento reconcile_payment: concilia un pago por referencia externa con las mismas reglas que la API, en una sola transacción.
--- Uso: EXEC reconcile_payment('PAY-BX17', :outcome, :reason); las condiciones en que modifica datos están en docs/DECISIONES.md.
+-- Uso: EXEC reconcile_payment('PAY-BX17', :outcome, :reason); controla su propia transacción (COMMIT o ROLLBACK), no llamarlo dentro de otra.
 WHENEVER SQLERROR EXIT SQL.SQLCODE
 
 CREATE OR REPLACE PROCEDURE reconcile_payment (

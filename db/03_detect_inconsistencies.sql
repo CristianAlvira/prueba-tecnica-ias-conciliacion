@@ -41,7 +41,13 @@ evaluated AS (
     LEFT JOIN provider_totals e ON e.payment_id = p.id
 ),
 classified AS (
-    SELECT evaluated.*,
+    SELECT external_ref,
+           status,
+           amount,
+           expected_net_debit,
+           net_debit,
+           approved_events,
+           declined_events,
            CASE
                WHEN status = 'CONFIRMED' AND approved_events > 0 AND declined_events = 0 THEN 'Y'
                WHEN status = 'REJECTED' AND declined_events > 0 AND approved_events = 0 THEN 'Y'
