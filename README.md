@@ -76,7 +76,7 @@ Son 30 pruebas y ninguna necesita Oracle. Cubren:
 - la API: 200, 400, 404, 409 y 500;
 - la detección del bloqueo ocupado de Oracle.
 
-El reporte de cobertura queda en `target/site/jacoco/index.html`.
+El reporte de cobertura queda en `target/site/jacoco/index.html`. Con `./mvnw verify` el build además exige al menos 80 % de líneas cubiertas en los paquetes del dominio.
 
 ## Scripts de base de datos (`db/`)
 
@@ -124,6 +124,8 @@ Probado con Oracle Free en Docker, desde un volumen vacío:
 - [Uso de IA](USO_DE_IA.md)
 
 ## Pendiente y siguientes pasos
+
+Nada quedó incompleto por tiempo: los entregables del enunciado están en el repositorio. Lo que sigue son mejoras fuera del alcance de esta corrección, en el orden en que las haría:
 
 - **Causa raíz:** que el manejador de eventos del proveedor bloquee el pago y verifique el débito vigente antes de insertar. Está fuera del alcance de esta corrección.
 - **Seguridad:** el endpoint no tiene autenticación. En producción iría detrás de la seguridad del servicio y solo para soporte N3.
