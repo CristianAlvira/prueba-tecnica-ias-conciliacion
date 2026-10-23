@@ -91,3 +91,18 @@ Ninguna necesita Oracle: el evaluador puede correr `./mvnw test` sin Docker. La 
 | S10 | Auditoría del caso sano | No se audita; queda solo en el log | Bajo | — |
 | S11 | Moneda y zona horaria | Una sola moneda, y la hora de la base (`SYSTIMESTAMP`) | Bajo | — |
 | S12 | Autenticación del endpoint | Fuera de alcance | Medio | Exponerlo solo detrás de seguridad y para N3 |
+
+## 10. Consulta de detección (`db/03_detect_inconsistencies.sql`)
+
+La consulta está armada por pasos con `WITH`, para que cada condición tenga nombre y se pueda revisar sola:
+
+| Paso | Qué calcula | Por qué |
+|---|---|---|
+| `recent_payments` | Pagos con actividad en las últimas 24 horas: cambió el pago, llegó un evento o se creó un movimiento | Si solo se mirara `updated_at`, se escaparía un pago viejo que acaba de recibir un evento o un movimiento (supuesto S6) |
+| `ledger_totals` | Débito neto: suma de `DEBIT` menos suma de `REVERSAL` | Es la regla del enunciado: un pago confirmado termina con un único débito neto por su valor |
+| `provider_totals` | Cuántos eventos aprobados y rechazados tiene cada pago | Para comparar el estado interno con lo que dijo el proveedor |
+| `evaluated` | Débito neto esperado: el monto si el pago está `CONFIRMED`, y 0 en cualquier otro estado | Un pago pendiente o rechazado no debería tener dinero debitado |
+| `classified` | Si el estado es compatible con el proveedor: `CONFIRMED` solo con aprobaciones, `REJECTED` solo con rechazos, `PENDING` sin eventos | Cualquier otra combinación es una inconsistencia |
+| Resultado | Pagos con débito neto distinto al esperado **o** estado incompatible, con la columna `finding` | `EVIDENCIA_CONTRADICTORIA` se muestra primero porque es el caso que no se puede corregir solo |
+
+Se usa `LEFT JOIN` con `NVL(..., 0)` para que un pago sin movimientos o sin eventos no desaparezca del resultado. La consulta es de solo lectura y no la ejecuta el script de inicio. Con los datos de muestra devuelve PAY-AX91, PAY-BX17 y PAY-CQ22, y no devuelve PAY-DK44.
