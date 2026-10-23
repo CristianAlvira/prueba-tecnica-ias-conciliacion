@@ -7,3 +7,6 @@ spring:
     url: ${DB_URL:r2dbc:oracle://localhost:1521/FREEPDB1}
     username: ${DB_USERNAME:pagoclaro}
     password: ${DB_PASSWORD:}
+
+reconciliation:
+  lock-wait-seconds: 5
